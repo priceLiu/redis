@@ -1,0 +1,39 @@
+﻿/*
+	配置说明：
+	1、RedisGroup可以包含多个Redis配置组
+	2、每个配置组可以配置读服务器和写服务器
+	3、connectName：配置名称
+	   db：配置组所使用的db【Int64类型，不同db里面的key可以重复，可选，默认0】
+	   ipAddress:Redis服务器IP
+	   port:redis端口号
+	   redMod：访问方式【ReadAndWrite(写/读) ReadOnly（读）】
+	   maxReadPoolSize:读数据线程池大小【可选，默认是10】
+	   maxWritePoolSize：写数据线程池大小【可选，默认是10】
+*/
+<configuration>
+  <configSections>
+    <section name="RedisSection" type="CN100.Redis.Client.RedisSection, CN100.Redis.Client"/>
+  </configSections>
+  <RedisSection xmlns="urn:CN100.Redis.Client">
+    <RedisGroup>
+      <host connectName="redis_productDetial" db="10" maxReadPoolSize="10" maxWritePoolSize="10">
+        <add ipAddress="127.0.0.1" port="6379" redMod="ReadAndWrite"/>
+		<add ipAddress="127.0.0.2" port="6379" redMod="ReadOnly"/>
+      </host>
+	  <host connectName="redis_members" db="9" maxReadPoolSize="10" maxWritePoolSize="10">
+        <add ipAddress="127.0.0.2" port="6379" redMod="ReadAndWrite"/>
+      </host>
+    </RedisGroup>
+  </RedisSection>
+</configuration>
+
+
+/*
+调用代码示例
+*/
+private void button1_Click(object sender, EventArgs e)
+{
+    CN100.Redis.Client.Client client = new Client("Redis_ProductDetial");  //指定配置名
+    client.SetData("ceshi", "hello");
+    MessageBox.Show(client.GetData("ceshi"));
+}
